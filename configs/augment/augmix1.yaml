@@ -1,0 +1,14 @@
+defaults:
+  - default.yaml
+  - _self_
+
+type: 
+  - specaug
+  - crop
+  - freqshift
+  - rotate
+
+AugMix: true
+
+rotate:
+  rotation_type: 16

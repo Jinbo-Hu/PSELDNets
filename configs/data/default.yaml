@@ -1,0 +1,43 @@
+audio_type: foa
+audio_feature: logmelIV
+sample_rate: 24000
+nfft: 1024
+n_mels: 64
+hoplen: 240
+window: hann
+
+train_chunklen_sec: 10
+train_hoplen_sec: 10
+test_chunklen_sec: 10
+test_hoplen_sec: 10
+
+# dataset: recording rooms
+train_dataset:
+  train20000_ov1_1: [fold0_room0]
+  train10000_ov2_1: [fold0_room0]
+  train3500_ov3_1: [fold0_room0]
+  train20000_ov1_2: [fold0_room0]
+  train10000_ov2_2: [fold0_room0]
+  train3500_ov3_2: [fold0_room0]
+
+valid_dataset:
+  test1800_ov1: 
+    [fold1_room1, fold1_room2, fold1_room3, fold1_room4, fold1_room5,
+     fold1_room6, fold1_room7, fold1_room8, fold1_room9]
+  test900_ov2:
+    [fold1_room1, fold1_room2, fold1_room3, fold1_room4, fold1_room5,
+     fold1_room6, fold1_room7, fold1_room8, fold1_room9]
+  test360_ov3:
+    [fold1_room1, fold1_room2, fold1_room3, fold1_room4, fold1_room5,
+     fold1_room6, fold1_room7, fold1_room8, fold1_room9]
+
+test_dataset:
+  test1800_ov1: 
+    [fold1_room1, fold1_room2, fold1_room3, fold1_room4, fold1_room5,
+     fold1_room6, fold1_room7, fold1_room8, fold1_room9]
+  test900_ov2:
+    [fold1_room1, fold1_room2, fold1_room3, fold1_room4, fold1_room5,
+     fold1_room6, fold1_room7, fold1_room8, fold1_room9]
+  test360_ov3:
+    [fold1_room1, fold1_room2, fold1_room3, fold1_room4, fold1_room5,
+     fold1_room6, fold1_room7, fold1_room8, fold1_room9]

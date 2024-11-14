@@ -1,0 +1,20 @@
+# @package _global_
+defaults:
+ - override /loss: einv2_pit.yaml
+ - override /augment: augmix.yaml
+ - _self_
+
+model:
+  batch_size: 17
+  optimizer:
+    method: AdamW
+    kwargs: {lr: 5e-5}
+  lr_scheduler:
+    kwargs: {step_size: 6}
+
+trainer:
+  max_epochs: 8
+  check_val_every_n_epoch: 1
+  num_sanity_val_steps: -1
+
+seed: 2024

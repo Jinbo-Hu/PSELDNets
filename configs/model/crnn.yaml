@@ -1,0 +1,23 @@
+
+batch_size: 256
+
+backbone: CRNN
+decoder: conformer # gru | conformer | null
+num_decoder_layers: 1
+kwargs:
+  encoder: CNN12
+  num_features: [64, 128, 256, 512, 1024, 2048]
+  audioset_pretrain: true
+  pretrained_path: ckpts/Cnn14_mAP=0.431.pth
+
+optimizer:
+  method: AdamW
+  kwargs: {lr: 0.001, amsgrad: false}
+
+lr_scheduler:
+  method: StepLR #CosineAnnealingLR | StepLR
+  # kwargs: {milestones: [70, 85], gamma: 0.1} # StepLR
+  # kwargs: {T_max: 50, eta_min: 5e-6} # CosineAnnealingLR
+  kwargs: {step_size: 40, gamma: 0.1} # StepLR
+
+# num_warmup_steps: 5

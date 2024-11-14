@@ -1,0 +1,21 @@
+# @package _global_
+defaults:
+ - override /augment: augmix1.yaml
+ - override /data: starss23/default.yaml
+ - override /loss: multi_accdoa.yaml
+ - _self_
+
+model:
+  batch_size: 32
+  kwargs:
+    pretrained_path: ckpts/mACCDOA-HTSAT-0.567.ckpt
+    audioset_pretrain: false
+  optimizer:
+    kwargs: {lr: 0.0001}
+  lr_scheduler:
+    kwargs: {step_size: 55}
+
+
+trainer:
+  max_epochs: 70
+  check_val_every_n_epoch: 1

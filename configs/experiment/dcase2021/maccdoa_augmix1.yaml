@@ -1,0 +1,19 @@
+# @package _global_
+
+defaults:
+ - override /data: dcase2021/default.yaml
+ - override /augment: augmix1.yaml
+ - override /loss: multi_accdoa.yaml
+ - _self_
+
+model:
+  batch_size: 32
+  optimizer:
+    kwargs: {lr: 0.0003}
+  lr_scheduler:
+    kwargs: {step_size: 60}
+
+
+trainer:
+  max_epochs: 70
+  check_val_every_n_epoch: 1

@@ -1,0 +1,9 @@
+defaults:
+  - default.yaml
+  - override hydra/launcher: joblib
+  - _self_
+
+hydra:
+  launcher:
+    # override the number of jobs for joblib
+    n_jobs: 10

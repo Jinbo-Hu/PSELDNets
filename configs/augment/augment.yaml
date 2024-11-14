@@ -1,0 +1,13 @@
+defaults:
+  - default.yaml
+  - _self_
+
+type: 
+  - specaug
+  - crop
+  - freqshift
+  - rotate
+  - trackmix
+  - wavmix
+
+AugMix: false

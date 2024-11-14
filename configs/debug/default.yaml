@@ -1,0 +1,22 @@
+# @package _global_
+
+# default debugging setup, runs 1 full epoch
+# other debugging configs can inherit from this one
+
+# overwrite task name so debugging logs are stored in separate folder
+task_name: debug
+
+# disable callbacks and loggers during debugging
+# callbacks: null
+# logger: null
+
+trainer:
+  max_epochs: 150
+  accelerator: gpu # debuggers don't like gpus
+  devices: 1 # debuggers don't like multiprocessing
+  detect_anomaly: true # raise exception if NaN or +/-inf is detected in any tensor
+  num_sanity_val_steps: -1 
+  limit_val_batches: 3
+  limit_train_batches: 0.3
+
+

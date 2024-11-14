@@ -1,0 +1,25 @@
+audio_type: foa
+audio_feature: logmelIV
+sample_rate: 24000
+nfft: 1024
+n_mels: 64
+hoplen: 240
+window: hann
+
+train_chunklen_sec: 10
+train_hoplen_sec: 10
+test_chunklen_sec: 10
+test_hoplen_sec: 10
+
+train_dataset:
+  DCASE2021: 
+    [fold1_room1, fold1_room2, fold2_room1, fold2_room2, 
+    fold3_room1, fold3_room2, fold4_room1, fold4_room2, 
+    fold5_room1, fold5_room2]
+valid_dataset:
+  DCASE2021: 
+    [fold6_room1, fold6_room2]
+test_dataset:
+  DCASE2021: 
+    [mix]
+  

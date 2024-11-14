@@ -1,0 +1,39 @@
+
+batch_size: 128
+
+backbone: PASST
+decoder: null # gru | conformer | null
+num_decoder_layers: 2
+ps_gap: 2 # gaps of parameter-sharing among layers, used in einv2
+kwargs:
+  u_patchout: 0
+  s_patchout_t: 0
+  s_patchout_f: 0
+  img_size: [64, 1001]
+  patch_size: 16
+  stride: 10
+  embed_dim: 768
+  depth: 7
+  num_heads: 12
+  mlp_ratio: 4
+  qkv_bias: true
+  representation_size: null
+  distilled: true
+  drop_rate: 0.
+  drop_path_rate: 0.
+  norm_layer: null
+  act_layer: null
+  audioset_pretrain: true
+  pretrained_path: ckpts/passt-l-kd-ap.47.ckpt
+
+optimizer:
+  method: AdamW
+  kwargs: {lr: 0.0003, amsgrad: false}
+
+lr_scheduler:
+  method: StepLR #CosineAnnealingLR | StepLR
+  # kwargs: {milestones: [70, 85], gamma: 0.1} # MultiStepLR
+  # kwargs: {T_max: 20, eta_min: 5e-6} # CosineAnnealingLR
+  kwargs: {step_size: 20, gamma: 0.1} # StepLR
+
+num_warmup_steps: 5

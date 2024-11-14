@@ -1,0 +1,40 @@
+# specify here default configuration
+# order of defaults determines the order in which configs override each other
+defaults:
+  - _self_
+  - hydra: default.yaml
+  - logger: tensorboard.yaml # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
+  - paths: default.yaml
+  - augment: default.yaml
+  - data: default.yaml
+  - model: htsat.yaml
+  - loss: accdoa.yaml
+  - adapt: default.yaml
+  - extras: default.yaml
+  - callbacks: default.yaml
+  - trainer: default.yaml
+  - task: seld.yaml
+
+  # experiment configs allow for version control of specific hyperparameters
+  # e.g. best hyperparameters for given model and datamodule
+  - experiment: null
+
+  # debugging config (enable through command line, e.g. `python train.py debug=default)
+  - debug: null
+
+# task/experiment name, determines output directory path
+task_name: ${model.method}_${model.backbone}
+experiment_name: ${now:%Y-%m-%d}_${now:%H-%M-%S}
+
+num_workers: 8
+
+sed_threshold: 0.5
+
+# simply provide checkpoint path to resume training
+ckpt_path: null
+
+# seed for random number generators in pytorch, numpy and python.random
+seed: 2024
+
+# compile model for faster training with pytorch 2.0
+compile: True

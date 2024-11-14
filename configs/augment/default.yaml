@@ -1,0 +1,44 @@
+
+type: []
+  # - specaug
+  # - crop
+  # - freqshift
+  # - rotate
+  # - trackmix
+  # - wavmix
+
+AugMix: false
+
+trackmix:
+  _target_: augment.TrackMix
+  alpha: 0.5
+
+wavmix:
+  _target_: augment.WavMix
+  alpha: 0.5
+  p: 0.5
+
+rotate:
+  _target_: augment.Rotation
+  p: 0.8
+  rotation_type: 48
+
+specaug:
+  _target_: augment.SpecAugment
+  T: 40
+  F: 8
+  mT: 4
+  mF: 2
+
+crop:
+  _target_: augment.Crop
+  T: 8
+  F: 4
+  mC: 4
+
+freqshift:
+  _target_: augment.FreqShift
+  p: 0.5
+  shift_range: 15
+  direction: None
+  mode: reflect

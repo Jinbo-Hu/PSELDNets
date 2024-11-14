@@ -1,0 +1,14 @@
+# @package _global_
+
+model:
+
+  method: accdoa
+
+  loss:
+    _target_: loss.accdoa.Losses
+    loss_fn: mse
+    loss_type: loss_all
+
+  optimizer:
+    method: AdamW
+    kwargs: {lr: 0.0001, amsgrad: false}

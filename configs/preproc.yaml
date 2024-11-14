@@ -1,0 +1,24 @@
+# specify here default configuration
+# order of defaults determines the order in which configs override each other
+defaults:
+  - data: default.yaml
+  - paths: default.yaml
+  - override hydra/launcher: joblib
+  - override hydra/hydra_logging: disabled  
+  - override hydra/job_logging: disabled 
+  - _self_
+
+hydra:  
+  output_subdir: null  
+  launcher:
+    n_jobs: 20
+  run:  
+    dir: .
+
+dataset: train3500_ov3_1
+dataset_type: dev
+wav_format: .flac
+mode: extract_data # extract_data
+
+num_workers: 8
+cuda: True

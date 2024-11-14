@@ -1,0 +1,16 @@
+# @package _global_
+
+model:
+
+  method: einv2
+
+  loss:
+    _target_: loss.einv2.Losses_pit
+    loss_fn: {sed: bce, doa: mse}
+    loss_type: loss_all
+    method: tPIT
+    loss_beta: 0.5
+
+  optimizer:
+    method: AdamW
+    kwargs: {lr: 0.0003, amsgrad: false}

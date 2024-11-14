@@ -1,0 +1,27 @@
+_target_: lightning.pytorch.trainer.Trainer
+
+default_root_dir: ${paths.output_dir}
+
+min_epochs: 1 # prevents early stopping
+max_epochs: 50
+
+accelerator: gpu
+devices: 1
+# strategy: ddp
+# use_distributed_sampler: False
+
+# mixed precision for extra speed-up
+precision: 32-true
+
+# perform a validation loop every N training epochs
+check_val_every_n_epoch: 1
+
+# Sanity check runs n validation batches before starting the training routine.
+#  Set it to `-1` to run all batches in all validation dataloaders.
+num_sanity_val_steps: 0
+
+# set True to to ensure deterministic results
+# makes training slower but gives more reproducibility than just setting seeds
+deterministic: False
+
+gradient_clip_val: 1.0

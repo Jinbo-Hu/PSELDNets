@@ -1,0 +1,35 @@
+audio_type: foa
+audio_feature: logmelIV
+sample_rate: 24000
+nfft: 1024
+n_mels: 64
+hoplen: 240
+window: hann
+
+train_chunklen_sec: 10
+train_hoplen_sec: 10
+test_chunklen_sec: 10
+test_hoplen_sec: 10
+
+train_dataset:
+  STARSS23: 
+    [fold3_room4, fold3_room6, fold3_room7, 
+     fold3_room9, fold3_room12, fold3_room13, 
+     fold3_room14, fold3_room21, fold3_room22] 
+  synth:
+    [fold1_room1, fold1_room2, fold1_room3, 
+     fold1_room4, fold1_room5, fold1_room6,
+     fold1_room7, fold1_room8, fold1_room9]
+valid_dataset:
+  STARSS23: 
+    [fold4_room2, fold4_room8, fold4_room10, 
+     fold4_room15, fold4_room16, fold4_room23, 
+     fold4_room24]
+test_dataset:
+  STARSS23: 
+    [fold4_room2, fold4_room8, fold4_room10, 
+     fold4_room15, fold4_room16, fold4_room23, 
+     fold4_room24]
+  
+
+  

@@ -1,0 +1,23 @@
+audio_type: foa
+audio_feature: logmelIV
+sample_rate: 32000
+nfft: 1024
+n_mels: 64
+hoplen: 320
+window: hann
+
+train_chunklen_sec: 10
+train_hoplen_sec: 10
+test_chunklen_sec: 10
+test_hoplen_sec: 10
+
+train_dataset:
+  L3DAS22: 
+    [split0_ov1, split1_ov1, split2_ov1, split3_ov1, split4_ov1]
+valid_dataset:
+  L3DAS22: 
+    [split5]
+test_dataset:
+  L3DAS22: 
+    [split5]
+  

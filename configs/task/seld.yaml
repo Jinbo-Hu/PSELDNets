@@ -1,0 +1,12 @@
+# @package _global_
+
+defaults:
+ - _self_
+
+datamodule:
+  _target_: data.datamodule.SELDDataModule
+
+modelmodule:
+  _target_: models.model_module.SELDModelModule
+
+# task_name: seld_train

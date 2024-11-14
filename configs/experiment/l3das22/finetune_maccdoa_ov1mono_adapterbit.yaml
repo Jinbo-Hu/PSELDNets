@@ -1,0 +1,26 @@
+# @package _global_
+defaults:
+ - override /data: l3das22/ov1.yaml
+ - override /loss: multi_accdoa.yaml
+ - override /adapt: mono_adapter.yaml
+ - _self_
+
+model:
+  batch_size: 32
+  method: multi_accdoa
+  loss:
+    _target_: loss.multi_accdoa.Losses
+  kwargs:
+    pretrained_path: ckpts/mACCDOA-HTSAT-0.567.ckpt
+    audioset_pretrain: false
+  optimizer:
+    kwargs: {lr: 0.001}
+  lr_scheduler:
+    kwargs: {step_size: 50}
+
+
+trainer:
+  max_epochs: 60
+  check_val_every_n_epoch: 1
+
+compile: false

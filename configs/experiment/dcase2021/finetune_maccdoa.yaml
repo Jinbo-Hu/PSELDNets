@@ -1,0 +1,20 @@
+# @package _global_
+defaults:
+ - override /data: dcase2021/default.yaml
+ - override /loss: multi_accdoa.yaml
+ - _self_
+
+model:
+  batch_size: 32
+  kwargs:
+    pretrained_path: ckpts/mACCDOA-HTSAT-0.567.ckpt
+    audioset_pretrain: false
+  optimizer:
+    kwargs: {lr: 0.0003}
+  lr_scheduler:
+    kwargs: {step_size: 60}
+
+
+trainer:
+  max_epochs: 70
+  check_val_every_n_epoch: 1
