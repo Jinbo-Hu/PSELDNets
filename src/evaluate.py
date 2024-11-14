@@ -69,16 +69,6 @@ class ComputeSELDResults(object):
             fn = file.stem
             gt_dict = load_output_format_file(file)
             nb_ref_frames = max(list(gt_dict.keys()))
-            #### fast adpatation, delete all the support samples
-            # local_room = re.search(r'fold\d_room\d+', fn).group()
-            # if self._fast_adaptation and local_room != room:
-            #     room = local_room
-            #     if nb_ref_frames < self._num_support_samples:
-            #         nb_ref_frames = 0
-            #         self._num_support_samples -= nb_ref_frames
-            #     for key in range(self._num_support_samples):
-            #         if key in gt_dict:
-            #             del gt_dict[key]
             
             self._ref_labels[fn] = [to_metrics_format(gt_dict, nb_ref_frames, label_resolution=0.1), nb_ref_frames, gt_dict]
 

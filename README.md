@@ -1,8 +1,28 @@
 # PSELDNets: Pre-trained Neural Networks on Large-scale Synthetic Datasets for Sound Event Localization and Detection
 
 ## Table of contents
+- [PSELDNets: Pre-trained Neural Networks on Large-scale Synthetic Datasets for Sound Event Localization and Detection](#pseldnets-pre-trained-neural-networks-on-large-scale-synthetic-datasets-for-sound-event-localization-and-detection)
+  - [Table of contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Environments](#environments)
+  - [Download model checkpoints](#download-model-checkpoints)
+    - [AudioSet-training checkpoints](#audioset-training-checkpoints)
+    - [Synthetic-dataset-training checkpoints](#synthetic-dataset-training-checkpoints)
+  - [Train PSELDNets from scratch](#train-pseldnets-from-scratch)
+    - [Download the synthetic datasets](#download-the-synthetic-datasets)
+    - [Quick train](#quick-train)
+    - [Quick evaluate](#quick-evaluate)
+  - [Transfer PSELDNets to downstream SELD datasets](#transfer-pseldnets-to-downstream-seld-datasets)
+    - [DCASE 2021 Task 3](#dcase-2021-task-3)
+    - [L3DAS22 Task 2](#l3das22-task-2)
+    - [STARSS23](#starss23)
+  - [AdapterBit Tuning](#adapterbit-tuning)
+    - [Training with multi-channel clips](#training-with-multi-channel-clips)
+    - [Training with monophonic clips](#training-with-monophonic-clips)
+  - [FAQs](#faqs)
+  - [Cite](#cite)
+  - [Reference](#reference)
 
-[toc]
 
 ## Introduction
 
@@ -34,6 +54,8 @@ The codebase is developed with Python 3.11.8. Install requirements as follows:
 ```bash
 pip install -r requirements.txt
 ```
+
+We use the **lightning-hydra-template**, which is based on pytorch-lightning and hydra. You can configure hyper-parameters easily via the command line. More details can be found in this [link](https://github.com/ashleve/lightning-hydra-template).
 
 ## Download model checkpoints
 
@@ -154,7 +176,7 @@ datasets
 
 Directly run the following command for fine-tuning:
 
-```python-repl
+```python
 python src/train.py experiment=dcase2021/finetune_maccdoa_augmix1
 ```
 
@@ -165,7 +187,7 @@ You can download the dataset in this [link](https://www.kaggle.com/datasets/l3da
 ```bash
 # NOTE: Need to set the path in the script first.
 # Refer to https://www.kaggle.com/docs/api for configuring the Kaggle command.
-# The script will download all L3DAS22 datasets, so we recommend downloading only datasets of L3DAS22 Task 2.
+# The script will download all L3DAS22 datasets, so we recommend downloading only datasets of L3DAS22 Task 2 via the above link.
 bash scripts/prepare_l3das22.bash
 ```
 
@@ -180,13 +202,13 @@ datasets
      |    ├── ...
      |    └── split4_ov3_49_B.wav   
      ├── data_test (300 .wav files, split5_ov1_0_A.wav - split5_ov3_49_B.wav)
-     ├── labels_train (750 .wav files which are divided into 5 splits)
+     ├── labels_train (750 .csv files which are divided into 5 splits)
      └── labels_test (150 .csv files, split5_ov1_0.csv - split5_ov3_49.wav)
 ```
 
 Directly run the following command for fine-tuning:
 
-```python-repl
+```python
 python src/train.py experiment=l3das22/finetune_maccdoa_augmix
 ```
 
@@ -218,7 +240,7 @@ datasets
 
 Directly run the following command for fine-tuning:
 
-```python-repl
+```python
 python src/train.py experiment=starss23/finetune_maccdoa_augmix1
 ```
 
@@ -238,13 +260,13 @@ The brief illustration of AdapterBit:
 
 Directly run the following command for full fine-tuning using multi-channel clips:
 
-```python-repl
+```python
 python src/train.py experiment=l3das22/finetune_maccdoa_ov1 # Full fine-tuning
 ```
 
 or AdapterBit tuning using monophonic clips:
 
-```python-repl
+```python
 python src/train.py experiment=l3das22/finetune_maccdoa_ov1_adapterbit # AdapterBit Tuning
 ```
 
@@ -252,15 +274,20 @@ python src/train.py experiment=l3das22/finetune_maccdoa_ov1_adapterbit # Adapter
 
 Directly run the following command for full fine-tuning using monophonic clips:
 
-```python-repl
+```python
 python src/train.py experiment=l3das22/finetune_maccdoa_ov1mono # Full fine-tuning
 ```
 
 or AdapterBit tuning using monophonic clips:
 
-```python-repl
+```python
 python src/train.py experiment=l3das22/finetune_maccdoa_ov1mono_adapterbit # AdapterBit Tuning
 ```
+
+## FAQs
+- If you have any question, please email to hujinbo2019@gmail.com or report an issue here.
+
+- If you came across out of memory error, then try to reduce the batch size.
 
 ## Cite
 
@@ -276,3 +303,4 @@ python src/train.py experiment=l3das22/finetune_maccdoa_ov1mono_adapterbit # Ada
 2. HTS-AT: [https://github.com/RetroCirce/HTS-Audio-Transformer](https://github.com/RetroCirce/HTS-Audio-Transformer)
 3. PaSST: [https://github.com/kkoutini/PaSST](https://github.com/RetroCirce/HTS-Audio-Transformer)
 4. PANNs: [https://github.com/qiuqiangkong/audioset_tagging_cnn](https://github.com/qiuqiangkong/audioset_tagging_cnn)
+5. lightning-hydra-template: [https://github.com/ashleve/lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template)
