@@ -1,6 +1,7 @@
 # PSELDNets: Pre-trained Neural Networks on Large-scale Synthetic Datasets for Sound Event Localization and Detection
 
 ## Table of contents
+
 - [PSELDNets: Pre-trained Neural Networks on Large-scale Synthetic Datasets for Sound Event Localization and Detection](#pseldnets-pre-trained-neural-networks-on-large-scale-synthetic-datasets-for-sound-event-localization-and-detection)
   - [Table of contents](#table-of-contents)
   - [Introduction](#introduction)
@@ -22,7 +23,6 @@
   - [FAQs](#faqs)
   - [Cite](#cite)
   - [Reference](#reference)
-
 
 ## Introduction
 
@@ -99,7 +99,7 @@ datasets
 │    ├── sum
 │    |    └── ... (20000 .flac files) 
 │    └── metadata
-│         └── ... (20000 .flac files)
+│         └── ... (20000 .csv files)
 ├── train20000_ov1_2
 ├── train10000_ov2_1
 ├── train10000_ov2_2
@@ -285,8 +285,8 @@ python src/train.py experiment=l3das22/finetune_maccdoa_ov1mono_adapterbit # Ada
 ```
 
 ## FAQs
-- If you have any question, please email to hujinbo2019@gmail.com or report an issue here.
 
+- If you have any question, please email to hujinbo2019@gmail.com or report an issue here.
 - If you came across out of memory error, then try to reduce the batch size.
 
 ## Cite
