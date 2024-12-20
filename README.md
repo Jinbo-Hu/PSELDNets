@@ -99,7 +99,7 @@ datasets
 │    ├── sum
 │    |    └── ... (20000 .flac files) 
 │    └── metadata
-│         └── ... (20000 .flac files)
+│         └── ... (20000 .csv files)
 ├── train20000_ov1_2
 ├── train10000_ov2_1
 ├── train10000_ov2_2
