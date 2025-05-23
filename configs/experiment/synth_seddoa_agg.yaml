@@ -1,0 +1,21 @@
+# @package _global_
+defaults:
+ - override /loss: einv2_pit_agg.yaml
+ - override /augment: augmix.yaml
+ - _self_
+
+model:
+  batch_size: 40
+  backbone: HTSAT_SEDDOA
+  optimizer:
+    method: AdamW
+    kwargs: {lr: 1e-4}
+  lr_scheduler:
+    kwargs: {step_size: 10}
+
+trainer:
+  max_epochs: 15
+  check_val_every_n_epoch: 1
+  num_sanity_val_steps: 0
+
+seed: 2024

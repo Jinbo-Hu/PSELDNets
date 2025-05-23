@@ -326,6 +326,122 @@ class HTSAT(nn.Module):
             'doa': pred_doa,
         }
 
+class HTSAT_SEDDOA(nn.Module):
+    def __init__(self, cfg, num_classes, in_channels=7, audioset_pretrain=True,
+                 pretrained_path='ckpts/HTSAT-fullset-imagenet-768d-32000hz.ckpt', 
+                 **kwargs):
+        super().__init__()
+        
+        data = cfg.data
+        mel_bins = cfg.data.n_mels
+        self.label_res = 0.1
+        self.num_classes = num_classes
+        self.output_frames = None #int(data.train_chunklen_sec / 0.1)
+        self.tgt_output_frames = int(10 / 0.1) # 10-second clip input to the model
+        self.pred_res = int(data.sample_rate / data.hoplen * self.label_res)
+        self.in_channels = in_channels
+        
+        # scalar
+        self.scalar = nn.ModuleList([nn.BatchNorm2d(mel_bins) for _ in range(in_channels)])
+        
+        # encoder
+        self.encoder = HTSAT_Swin_Transformer(self.in_channels, mel_bins=mel_bins, **kwargs)
+        
+        num_feats = [kwargs['embed_dim'] * (2 ** i_layer) for i_layer in range(len(kwargs['depths']))]
+        self.sed_tscam_conv = nn.Conv2d(
+            in_channels = num_feats[-1],
+            out_channels = self.num_classes * 3,
+            kernel_size = (self.encoder.SF,3),
+            padding = (0,1))
+        self.doa_tscam_conv = nn.Conv2d(
+            in_channels = num_feats[-1],
+            out_channels = 3 * 3,
+            kernel_size = (self.encoder.SF,3),
+            padding = (0,1))
+        
+        self.final_act_sed = nn.Identity()
+        self.final_act_doa = nn.Tanh()
+
+        if pretrained_path:
+            log.info('\n Loading pretrained model from {}... \n'.format(pretrained_path))
+            self.load_ckpts(pretrained_path, audioset_pretrain)
+
+
+    def load_ckpts(self, pretrained_path, audioset_pretrain=True):
+        if audioset_pretrain:
+            htsat_ckpts = torch.load(pretrained_path, map_location='cpu')['state_dict']
+            htsat_ckpts = {k.replace('sed_model.', ''): v for k, v in htsat_ckpts.items()}
+            
+            log.info('\n Loading weights for encoder... \n')
+            for key, value in self.encoder.state_dict().items():
+                if key == 'patch_embed.proj.weight':
+                    paras = htsat_ckpts[key].repeat(1, self.in_channels, 1, 1) / self.in_channels
+                    value.data.copy_(paras)
+                else: value.data.copy_(htsat_ckpts[key])
+
+            for ich in range(self.in_channels):
+                self.scalar[ich].weight.data.copy_(htsat_ckpts['bn0.weight'])
+                self.scalar[ich].bias.data.copy_(htsat_ckpts['bn0.bias'])
+                self.scalar[ich].running_mean.copy_(htsat_ckpts['bn0.running_mean'])
+                self.scalar[ich].running_var.copy_(htsat_ckpts['bn0.running_var'])
+                self.scalar[ich].num_batches_tracked.copy_(htsat_ckpts['bn0.num_batches_tracked'])
+        else:
+            ckpt = torch.load(pretrained_path, map_location='cpu')['state_dict']
+            ckpt = {k.replace('net.', ''): v for k, v in ckpt.items()}
+            ckpt = {k.replace('_orig_mod.', ''): v for k, v in ckpt.items()} # if compiling the model
+            state_dict = self.state_dict()
+            for key, value in ckpt.items():
+                if key.startswith(('sed_tscam_conv.', 'head', 'af_extractor')):
+                    log.info(f'Skipping {key}...')
+                else: state_dict[key].data.copy_(value)
+
+    def forward(self, x):
+        """
+        x: waveform, (batch_size, num_channels, time_frames, mel_bins)
+        """
+
+        B, C, T, F = x.shape
+
+        # Concatenate clips to a 10-second clip if necessary
+        if self.output_frames is None:
+            self.output_frames = int(T // self.pred_res)
+        if self.output_frames < self.tgt_output_frames:
+            assert self.output_frames == self.tgt_output_frames // 2, \
+                'only support 5-second or 10-second clip to be input to the model'
+            factor = 2
+            assert B % factor == 0, 'batch size should be a factor of {}'.format(factor)
+            x = torch.cat((x[:B//factor, :, :-1], x[B//factor:, :, :-1]), dim=2)
+        elif self.output_frames > self.tgt_output_frames:
+            raise NotImplementedError('output_frames > tgt_output_frames is not implemented')
+        # Compute scalar
+        x = x.transpose(1, 3)
+        for nch in range(x.shape[-1]):
+            x[..., [nch]] = self.scalar[nch](x[..., [nch]])
+        x = x.transpose(1, 3)
+
+        # Rewrite the forward function of the encoders
+        x = self.encoder(x)
+
+        pred_sed = torch.flatten(self.sed_tscam_conv(x), 2).permute(0,2,1).contiguous()
+        pred_doa = torch.flatten(self.doa_tscam_conv(x), 2).permute(0,2,1).contiguous()
+        pred_sed = interpolate(pred_sed, ratio=self.encoder.time_res, method='bilinear')[:,:self.tgt_output_frames*self.pred_res]
+        pred_doa = interpolate(pred_doa, ratio=self.encoder.time_res, method='bilinear')[:,:self.tgt_output_frames*self.pred_res]
+        if self.output_frames < self.tgt_output_frames:
+            x_output_frames = self.output_frames * self.pred_res
+            pred_sed = torch.cat((pred_sed[:, :x_output_frames], pred_sed[:, x_output_frames:]), dim=0)
+            pred_doa = torch.cat((pred_doa[:, :x_output_frames], pred_doa[:, x_output_frames:]), dim=0)
+        pred_sed = pred_sed.reshape(B, self.output_frames, self.pred_res, 3, -1).mean(dim=2)
+        pred_doa = pred_doa.reshape(B, self.output_frames, self.pred_res, 3, -1).mean(dim=2)
+
+        pred_sed = self.final_act_sed(pred_sed)
+        pred_doa = self.final_act_doa(pred_doa)
+
+        return {
+            'sed': pred_sed,
+            'doa': pred_doa,
+        }
+
+
 
 class PASST(nn.Module):
     def __init__(self, cfg, num_classes, in_channels=7, pretrained_path=None,

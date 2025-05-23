@@ -1,6 +1,31 @@
 import torch
+import torch.nn.functional as F
 from .components.loss_utilities import MSELoss, BCEWithLogitsLoss, CosineLoss, L1Loss, CrossEntropyLoss
 from itertools import permutations
+
+
+def rearrange_label(sed_label, doa_label):
+    track1 = sed_label[:, :, 0]
+    track2 = sed_label[:, :, 1]
+    track3 = sed_label[:, :, 2]
+    assert torch.count_nonzero((track1 > 0).sum(dim=-1, dtype=int) > 1) == 0, 'track1 has multiple events'
+    assert torch.count_nonzero((track2 > 0).sum(dim=-1, dtype=int) > 1) == 0, 'track2 has multiple events'
+    assert torch.count_nonzero((track3 > 0).sum(dim=-1, dtype=int) > 1) == 0, 'track3 has multiple events'
+    track_sort = torch.stack((track1.sum(-1), track2.sum(-1), track3.sum(-1)), dim=-1).sort(dim=-1, descending=True)[1]
+    sed_label = torch.gather(sed_label, dim=-2, index=track_sort.unsqueeze(-1).expand(*sed_label.shape))
+    doa_label = torch.gather(doa_label, dim=-2, index=track_sort.unsqueeze(-1).expand(*doa_label.shape))
+    
+    return sed_label, doa_label
+
+
+def check_label(sed_label, act_event_ov1, act_event_ov2):
+    assert (sed_label[act_event_ov1] > 0).sum() == len(act_event_ov1[0]), \
+        'Error in ov1 track with {} desired events but got {} events'.format(
+            len(act_event_ov1[0]), (sed_label[act_event_ov1] > 0).sum())
+    assert (sed_label[act_event_ov2] > 0).sum() == len(act_event_ov2[0]) * 2, \
+        'Error in ov2 track with {} desired events but got {} events'.format(
+            len(act_event_ov2[0]) * 2, (sed_label[act_event_ov2] > 0).sum())
+
 
 class Losses_pit(object):
     def __init__(self, loss_fn, loss_type, method, loss_beta):
@@ -89,3 +114,76 @@ class Losses_pit(object):
         }
 
         return loss_sed, loss_doa
+
+class Losses_agg_pit(object):
+    def __init__(self, loss_fn, loss_type, loss_alpha, method):
+        
+        if loss_fn == 'mse':
+            loss_agg_fn = MSELoss(reduction='mean')
+            loss_agg_fn_pit = MSELoss(reduction='PIT')
+        elif loss_fn == 'l1':
+            loss_agg_fn = L1Loss(reduction='mean')
+            loss_agg_fn_pit = L1Loss(reduction='PIT')
+        
+        self.max_ov = 3
+        self.loss_type = loss_type
+        self.alpha = loss_alpha
+        self.method = method
+        self.losses = loss_agg_fn
+        self.losses_pit = loss_agg_fn_pit
+        self.names = ['loss_all']
+        self.loss_dict_keys = ['loss_all', 'loss_agg', 'loss_accdoa', 'loss_other']
+
+    def __call__(self, pred, target, epoch_it=0):
+        sed_label, doa_label = target['sed_label'], target['doa_label']
+        sed_pred, doa_pred = pred['sed'], pred['doa']
+        sed_pred = torch.sigmoid(sed_pred)
+        doa_pred = F.normalize(doa_pred, p=2, dim=-1)
+        target = sed_label[..., None] * doa_label[:, :, :, None, :]
+        pred = sed_pred[..., None] * doa_pred[:, :, :, None, :]
+        loss_accdoa, loss_agg = 0., 0.
+        if self.method == 'mACCDOA_pit':
+            ## similar to the track-wise multi-accdoa
+            loss_agg = self.tPIT(pred, target).mean()
+            loss_all = loss_agg
+        elif self.method == 'ACCDOA':
+            ## similar to the accdoa
+            target = torch.sum(target, dim=2)
+            pred = torch.sum(pred, dim=2)
+            loss_accdoa = self.losses(pred, target).mean()
+            loss_all = loss_accdoa
+        else:
+            loss_agg = self.tPIT(pred, target).mean()
+            loss_accdoa = self.losses(pred.sum(dim=2), target.sum(dim=2)).mean()
+            loss_all = self.alpha * loss_agg + (1 - self.alpha) * loss_accdoa
+
+        losses_dict = {
+            'loss_all': loss_all,
+            'loss_agg': loss_agg,
+            'loss_accdoa': loss_accdoa,
+            'loss_other': 0.
+        }
+        return losses_dict
+    
+    def tPIT(self, pred, target):
+        """Frame Permutation Invariant Training for 6 possible combinations
+
+        Args:
+            pred: [batch_size, T, num_tracks=3, num_classes, xyz]
+            target: [batch_size, T, num_tracks=3, num_classes, xyz]
+        Return:
+            loss_all: Find a possible permutation to get the lowest loss. 
+        """
+
+        loss_list = []
+        loss_all = 0.
+        perm_list = list(permutations(range(pred.shape[2])))
+        for idx, perm in enumerate(perm_list):
+            loss_list.append(self.losses_pit(pred, target[:, :, list(perm)]))
+        loss_list = torch.stack(loss_list, dim=0)
+        loss_idx = torch.argmin(loss_list, dim=0)
+        for idx, perm in enumerate(perm_list):
+            loss_all += loss_list[idx] * (loss_idx == idx)
+
+        return loss_all
+    

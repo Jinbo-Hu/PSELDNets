@@ -4,6 +4,7 @@
 
 - [PSELDNets: Pre-trained Neural Networks on Large-scale Synthetic Datasets for Sound Event Localization and Detection](#pseldnets-pre-trained-neural-networks-on-large-scale-synthetic-datasets-for-sound-event-localization-and-detection)
   - [Table of contents](#table-of-contents)
+  - [New Updates](#new-updates)
   - [Introduction](#introduction)
   - [Environments](#environments)
   - [Download model checkpoints](#download-model-checkpoints)
@@ -23,6 +24,9 @@
   - [FAQs](#faqs)
   - [Cite](#cite)
   - [Reference](#reference)
+
+## New Updates
+- (2025-5-22) We release `EINV2-HTSAT-AGG1-0.514.ckpt` and `SEDDOA-HTSAT-AGG1-0.531.ckpt`. We also add corresponding implementations. The method is described [here](AGG_LOSS.md).
 
 ## Introduction
 
