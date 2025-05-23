@@ -28,17 +28,17 @@ Coupling the activity of sound events with its Cartesian direction-of-arrival ve
 
 1. mACCDOA[3]-like (AGG1) loss:
 
-$$
+```math
 \mathcal{L}_{\mathrm{AGG1}}(t)=\min _{\alpha \in \mathcal{P}(t)} \sum_i \ell\left(\mathbf{y}_{\mathrm{SED}}^i(t, \alpha) \cdot \frac{\mathbf{y}_{\mathrm{DOA}}^i(t, \alpha)^{\mathrm{T}}}{\left\|\mathbf{y}_{\mathrm{DOA}}^i(t, \alpha)\right\|},\ \mathbf{y}^i\right)
-$$
+```
 
 The track-wise model needs to use permutation invariant training[1]. $\alpha$ indicates one of the possible permutations.
 
 3. ACCDOA[2]-like (AGG2) loss:
 
-$$
+```math
 \mathcal{L}_{\mathrm{AGG2}}(t)=\ell\left(\sum_i \mathbf{y}_{\mathrm{SED}}^i(t) \cdot \frac{\mathbf{y}_{\mathrm{DOA}}^i(t)^{\mathrm{T}}}{\left\|\mathbf{y}_{\mathrm{DOA}}^i(t)\right\|},\ \mathbf{y}\right)
-$$
+```
 
 ## Result
 
