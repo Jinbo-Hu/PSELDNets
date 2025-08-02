@@ -295,7 +295,7 @@ python src/train.py experiment=l3das22/finetune_maccdoa_ov1mono_adapterbit # Ada
 
 ## Cite
 
-[1] Jinbo Hu, Yin Cao, Ming Wu, Fang Kang, Feiran Yang, Wenwu Wang, Mark D. Plumbley, Jun Yang, "PSELDNets: Pre-trained Neural Networks on Large-scale Synthetic Datasets for Sound Event Localization and Detection" [arXiv:2411.06399](https://arxiv.org/abs/2411.06399), 2024. [URL](https://arxiv.org/abs/2411.06399)
+[1] Jinbo Hu, Yin Cao, Ming Wu, Fang Kang, Feiran Yang, Wenwu Wang, Mark D. Plumbley, Jun Yang, "PSELDNets: Pre-trained Neural Networks on Large-scale Synthetic Datasets for Sound Event Localization and Detection" IEEE Transactions on Audio, Speech and Language Processing, vol. 33, pp. 2845-2860, 2025. [URL](https://ieeexplore.ieee.org/abstract/document/11074745)
 
 [2] Jinbo Hu, Yin Cao, Ming Wu, Qiuqiang Kong, Feiran Yang, Mark D. Plumbley, and Jun Yang, “Sound event localization and detection for real spatial sound scenes: Event-independent network and data augmentation chains,” in Proc. Detect. Classification Acoust. Scenes Events (DCASE) Workshop, 2022, pp. 46–50. [URL](https://arxiv.org/abs/2209.01802)
 
