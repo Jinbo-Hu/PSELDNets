@@ -76,13 +76,13 @@ class DatasetACCDOA(BaseDataset):
             data_path = path
             x = load_audio(data_path, index_begin, index_end)
             pad_width = ((0, 0), (pad_width_before, pad_width_after))
-            dataset = path.split('/')[-3]
+            dataset = Path(path).parts[-3]
         else:
             data_path = self.data_dir.joinpath(path)
             with h5py.File(data_path, 'r') as hf:
                 x = hf['feature'][:, index_begin: index_end] 
             pad_width = ((0, 0), (pad_width_before, pad_width_after), (0, 0))
-            dataset = path.split('/')[-2]
+            dataset = Path(path).parts[-2]
         x = np.pad(x, pad_width, mode='constant')
 
         if self.dataset_type != 'test':
@@ -144,13 +144,13 @@ class DatasetEINV2(BaseDataset):
             data_path = path
             x = load_audio(data_path, index_begin, index_end)
             pad_width = ((0, 0), (pad_width_before, pad_width_after))
-            dataset = path.split('/')[-3]
+            dataset = Path(path).parts[-3]
         else:
             data_path = self.data_dir.joinpath(path)
             with h5py.File(data_path, 'r') as hf:
                 x = hf['feature'][:, index_begin: index_end] 
             pad_width = ((0, 0), (pad_width_before, pad_width_after), (0, 0))
-            dataset = path.split('/')[-2]
+            dataset = Path(path).parts[-2]
         x = np.pad(x, pad_width, mode='constant')
         if self.dataset_type != 'test':
             meta_path = self.track_label_dir.joinpath('{}.h5'.format(dataset))
@@ -204,13 +204,13 @@ class DatasetMultiACCDOA(BaseDataset):
             data_path = path
             x = load_audio(data_path, index_begin, index_end)
             pad_width = ((0, 0), (pad_width_before, pad_width_after))
-            dataset = path.split('/')[-3]
+            dataset = Path(path).parts[-3]
         else:
             data_path = self.data_dir.joinpath(path)
             with h5py.File(data_path, 'r') as hf:
                 x = hf['feature'][:, index_begin: index_end] 
             pad_width = ((0, 0), (pad_width_before, pad_width_after), (0, 0))
-            dataset = path.split('/')[-2]
+            dataset = Path(path).parts[-2]
         x = np.pad(x, pad_width, mode='constant')
 
         if 'test' not in self.dataset_type:
